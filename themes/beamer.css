@@ -70,8 +70,39 @@ time { font-size: 0.7em; color: var(--structure-light); }
 em     { color: var(--structure); font-style: normal; }
 strong { color: var(--structure); }
 
-/* Lists: beamer's triangle bullets (colour comes from layouts.css ::marker) */
-section ul { list-style-type: "\25B8  "; }
+/* Lists, like Warsaw (inner theme "rounded"): a small shaded ball for
+ * bullets, a numbered ball for enumerations. Inside a block, the balls
+ * take the block's colour (--block-color: blue, red or green). */
+section ul, section ol { list-style: none; padding-left: 0.3em; }
+section ul > li, section ol > li { position: relative; padding-left: 1.5em; }
+section ul > li::before, section ol > li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	border-radius: 50%;
+	background: radial-gradient(circle at 35% 30%,
+		color-mix(in srgb, var(--block-color, var(--structure)) 40%, white) 0%,
+		var(--block-color, var(--structure)) 55%,
+		color-mix(in srgb, var(--block-color, var(--structure)) 80%, black) 100%);
+	box-shadow: 0.03em 0.03em 0.08em rgba(0, 0, 0, 0.4);
+}
+section ul > li::before {
+	top: 0.5em;
+	width: 0.5em;
+	height: 0.5em;
+}
+section ol { counter-reset: item; }
+section ol > li { counter-increment: item; }
+section ol > li::before {
+	content: counter(item);
+	top: 0.2em;
+	width: 1.1em;
+	height: 1.1em;
+	line-height: 1.1em;
+	text-align: center;
+	font-size: 0.75em;
+	color: var(--paper);
+}
 
 /* ---- headline: table of contents ---- */
 #toc {
@@ -130,7 +161,10 @@ section .toc .toc-level-1::before {
 	border-radius: 50%;
 	text-align: center;
 	font-size: 0.8em;
-	background: var(--structure);
+	background: radial-gradient(circle at 35% 30%,
+		color-mix(in srgb, var(--structure) 40%, white) 0%,
+		var(--structure) 55%,
+		color-mix(in srgb, var(--structure) 80%, black) 100%);
 	color: var(--paper);
 	box-shadow: 0.05em 0.05em 0.15em rgba(0, 0, 0, 0.4);
 	vertical-align: 0.1em;

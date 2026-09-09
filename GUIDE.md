@@ -272,7 +272,7 @@ Les couleurs viennent de trois variables que le thème peut redéfinir : `--stru
 ```html
 <nav id="toc"></nav>                               <!-- barre de sommaire, en haut -->
 <div id="footline"><span>Auteur</span><span>Titre</span></div>   <!-- en bas -->
-<div id="slides">
+<div id="slides" class="pagenumber">                <!-- pagenumber : numéro en bas à droite de chaque diapo -->
   <section><div><hgroup><h1>Titre</h1><h4>Sous-titre</h4></hgroup><address>…</address><time>…</time></div></section>
   <section><h3>Sommaire</h3><div><nav class="toc"></nav></div></section>
   <h2>Première partie</h2>
@@ -285,6 +285,8 @@ Les couleurs viennent de trois variables que le thème peut redéfinir : `--stru
   </section>
 </div>
 ```
+
+Les listes suivent le thème Warsaw de beamer : une petite bille pour les puces, une bille numérotée pour les énumérations, à la couleur du bloc qui les contient. Le numéro de page n'est affiché que si `#slides` porte la classe `pagenumber` (Warsaw n'en affiche pas).
 
 L'exemple `examples/newton/` contient le même exposé en `newton.tex` et `newton.html`, structure pour structure ; c'est la meilleure façon de voir la correspondance.
 

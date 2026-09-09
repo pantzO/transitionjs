@@ -6,7 +6,7 @@ Transition.js is a 500-line JavaScript file with no dependency. It does one thin
 
 <p align="center"><img src="docs/compare.png" width="900" alt="The same talk in beamer (left) and Transition.js (right)"></p>
 
-*Left: beamer. Right: the same talk in Transition.js, from [`examples/newton/`](examples/newton/). Both sources are there; put them side by side.*
+*Left: beamer (Warsaw theme). Right: the same talk in Transition.js, from [`examples/newton/`](examples/newton/). Both sources are there; put them side by side.*
 
 ## Try it in thirty seconds
 
