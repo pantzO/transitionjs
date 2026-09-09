@@ -2,11 +2,13 @@
 
 **Slides in HTML and CSS, written the way you write beamer.**
 
+**▶ See it running: [pantz.pages.math.cnrs.fr/transitionjs](https://pantz.pages.math.cnrs.fr/transitionjs/)** — every example below opens in the browser, nothing to install.
+
 Transition.js is a 500-line JavaScript file with no dependency. It does one thing: at each step of your talk, it toggles a few classes and increments a few CSS variables. Everything you see — the next slide sliding in, a bullet appearing, a formula turning red — is CSS. If you can write a beamer talk, you already know how to write one with Transition.js; if you know some CSS, there is no effect you cannot build.
 
 <p align="center"><img src="docs/compare.png" width="900" alt="The same talk in beamer (left) and Transition.js (right)"></p>
 
-*Left: beamer (Warsaw theme). Right: the same talk in Transition.js, from [`examples/newton/`](examples/newton/). Both sources are there; put them side by side.*
+*Left: beamer (Warsaw theme). Right: the same talk in Transition.js — [open it](https://pantz.pages.math.cnrs.fr/transitionjs/examples/newton/newton.html), then compare [`newton.tex`](examples/newton/newton.tex) and [`newton.html`](examples/newton/newton.html) side by side.*
 
 ## Try it in thirty seconds
 
@@ -102,7 +104,7 @@ themes/sarah.css     a free-form theme: absolute positioning, big type, effects
 tableofcontents.js   tables of contents, ids for the URL, indices for the headline
 graph.js             function graphs in SVG, animatable
 examples/            minimal, beamer, tour (every feature), fade, newton (beamer side by side)
-GUIDE.md             the full guide (in French for now)
+GUIDE.md             the full guide (in French for now) — [online](https://pantz.pages.math.cnrs.fr/transitionjs/guide.html)
 test/                logic tests under jsdom, screenshots under headless Chromium
 ```
 

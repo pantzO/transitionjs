@@ -2,6 +2,8 @@
 
 Transition.js fait des présentations en HTML et CSS. Le moteur ne sait faire qu'une chose : à chaque pas de la présentation, basculer des classes et incrémenter des variables CSS sur des éléments. Tout ce qui se voit — le passage d'une diapo à l'autre, l'apparition d'un point, la couleur d'une formule — est écrit en CSS.
 
+Les exemples tournent en ligne sur https://pantz.pages.math.cnrs.fr/transitionjs/ ; le dépôt est sur https://plmlab.math.cnrs.fr/pantz/transitionjs.
+
 Contenu :
 
 1. [Démarrage](#1-démarrage)
