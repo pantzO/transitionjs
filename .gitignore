@@ -1,0 +1,9 @@
+node_modules/
+test/shots/
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+.DS_Store

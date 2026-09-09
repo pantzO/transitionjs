@@ -1,0 +1,129 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\useinnertheme[shadow]{rounded}
+
+\title{La méthode de Newton}
+\subtitle{Résoudre $f(x)=0$ en quelques itérations}
+\author{O. Pantz}
+\date{Septembre 2026}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Sommaire}
+  \tableofcontents
+\end{frame}
+
+\section{Le principe}
+
+\begin{frame}{L'idée}
+  On cherche une racine de $f : \mathbb{R} \to \mathbb{R}$, dérivable.
+  \begin{itemize}[<+->]
+    \item Partir d'un point $x_0$ proche de la racine.
+    \item Remplacer $f$ par sa tangente en $x_n$.
+    \item Prendre pour $x_{n+1}$ le zéro de cette tangente :
+      \[ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} \]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Interprétation géométrique}
+  \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[width=9cm, height=5.5cm, axis lines=middle, xmin=0.5, xmax=2.5, ymin=-1, ymax=3, xtick=\empty, ytick=\empty]
+        \addplot[thick, domain=0.5:2.5, samples=80] {x^2-2};
+        \addplot[dashed, domain=0.9:2.4] {4*x-6};
+        \node[below] at (axis cs:2,0) {$x_0$};
+        \node[below] at (axis cs:1.5,0) {$x_1$};
+      \end{axis}
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\section{Convergence}
+
+\begin{frame}{Convergence quadratique}
+  \begin{block}{Théorème}
+    Soit $f$ de classe $\mathcal{C}^2$ et $\alpha$ une racine simple : $f(\alpha)=0$, $f'(\alpha)\neq 0$.
+    Il existe $\delta>0$ tel que, pour tout $x_0 \in\,]\alpha-\delta,\alpha+\delta[$, la suite $(x_n)$ converge vers $\alpha$ et
+    \[ |x_{n+1}-\alpha| \le C\,|x_n-\alpha|^2. \]
+  \end{block}
+  \pause
+  \begin{alertblock}{Mais}
+    Loin de la racine, la méthode peut diverger, osciller, ou converger vers une autre racine.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Idée de la preuve}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \textbf{Hypothèses}
+      \begin{itemize}
+        \item $f'(\alpha)\neq 0$, donc $f'\neq 0$ près de $\alpha$.
+        \item $f''$ bornée sur cet intervalle.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{Étapes}
+      \begin{enumerate}
+        \item Taylor en $x_n$ : $0 = f(\alpha) = f(x_n) + f'(x_n)(\alpha-x_n) + \tfrac12 f''(\xi)(\alpha-x_n)^2$.
+        \item Diviser par $f'(x_n)$ et reconnaître $x_{n+1}$.
+        \item Conclure avec $C = \sup|f''| / (2\inf|f'|)$.
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{En pratique}
+
+\begin{frame}{Exemple : $\sqrt{2}$}
+  On applique la méthode à $f(x) = x^2-2$, avec $x_0 = 2$.
+  \begin{center}
+    \begin{tabular}{c l c}
+      $n$ & $x_n$ & chiffres exacts \\ \hline
+      0 & 2 & 0 \\
+      1 & 1,5 & 1 \\
+      2 & 1,41\textbf{6667} & 3 \\
+      3 & 1,414215\textbf{686} & 6 \\
+      4 & 1,41421356237\textbf{469} & 12 \\
+    \end{tabular}
+  \end{center}
+  \pause
+  Le nombre de chiffres exacts double à chaque itération.
+\end{frame}
+
+\begin{frame}{Bilan}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{exampleblock}{Avantages}
+        \begin{itemize}
+          \item Convergence très rapide.
+          \item Se généralise à $\mathbb{R}^n$.
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{alertblock}{Limites}
+        \begin{itemize}
+          \item Il faut calculer $f'$.
+          \item Il faut partir assez près.
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+    \Huge Merci !
+  \end{center}
+\end{frame}
+
+\end{document}

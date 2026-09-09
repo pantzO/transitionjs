@@ -1,0 +1,72 @@
+/* themes/base.css — layout shared by the "document-like" themes.
+ * No colour, no font: load it before a theme, or use it alone.
+ *
+ *   <section>              a slide: titles at the top, content centred below
+ *     <h3>Title</h3>
+ *     <h4>Subtitle</h4>
+ *     <div> … </div>       the main block, fills the remaining height
+ *   </section>
+ *   <h2>Part title</h2>    a part-title slide (direct child of #slides)
+ */
+
+#slides > * {
+	font-size: 7vh;			/* absolute on purpose: #slides itself has font-size 0 */
+}
+
+/* A slide is a column; the last <div> takes the remaining space. */
+section {
+	display: flex;
+	flex-direction: column;
+	padding: 0.5em 1em;
+}
+section > h1, section > h3, section > h4 {
+	text-align: center;
+	margin: 0;
+}
+section > div {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+/* Lists look better aligned on their bullets. */
+section ul, section ol {
+	text-align: left;
+}
+
+/* Part titles are slides on their own. */
+#slides > h2 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	margin: 0;
+}
+
+/* Title slide */
+section hgroup > * {
+	font-weight: normal;
+	margin: 0;
+}
+section h1 { font-size: 2em; }
+
+/* Arrows */
+#navigate {
+	position: fixed;
+	z-index: 99999;
+	bottom: 1rem;
+	right: 1rem;
+	font-size: 5vh;
+	user-select: none;
+}
+#navigate > * {
+	cursor: pointer;
+}
+
+/* Fragment helpers */
+.hidden  { opacity: 0; }
+.removed { display: none !important; }
+.small   { font-size: 0.7em; }

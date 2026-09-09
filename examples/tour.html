@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transition.js — feature tour</title>
+  <link rel="stylesheet" href="../transition.css">
+  <link rel="stylesheet" href="../themes/sarah.css">
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], processEscapes: true } };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <!-- Fixed overlays stay outside #slides -->
+  <div id="footnote" class="removed tiny">Contact: <a href="mailto:pantz@unice.fr">Olivier Pantz</a></div>
+  <div id="logo" class="removed">No logo<br>yet</div>
+
+  <div id="slides">
+    <section>
+      <div class="center middle Huge">
+        Transition.js
+        <div class="normal">for HTML5 presentations</div>
+        <div class="small blink">Press spacebar</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle">
+        <h2>What for?</h2>
+        <div class="small">To create beautiful presentations<br>using HTML &amp; CSS</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle big">Smooth transitions…</div>
+    </section>
+
+    <!-- Inline fragments win over rules: this slide arrives instantly -->
+    <section data-fragments="[slides]{--shift++}">
+      <div class="center middle big">Or not</div>
+    </section>
+
+    <section>
+      <div class="center middle full">
+        <h2>Fragments</h2>
+        <div class="hidden" data-fragments="{hidden} [this]{big} 1s +1{small} 2s">This was hidden</div>
+        <div class="hidden big" data-fragments="{hidden} +1{small} 2s">More is behind</div>
+        <div class="hidden" data-fragments="{hidden}">Several fragments at once</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle full">
+        You can create your own effects.
+        <div class="bottom" data-fragments="{bottom} 1s">There is no limit…</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle full">
+        <h2>Navigate with keys</h2>
+        <div>
+          <div>Back</div><div class="italic">Up/left arrow, PageUp</div><br>
+          <div>Forward</div><div class="italic">Down/right arrow, PageDown, Enter, spacebar</div><br>
+          <div>First / last</div><div class="italic">Home / End</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle full">
+        <h2>Zoom out and jump</h2>
+        <span data-fragments="+0{Huge} 2s 2s">Press <span class="boxed">Esc</span>, then click a slide</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle full">
+        <h2>Footnote and logo</h2>
+        <div class="hidden" data-fragments="{hidden} +0[footnote]{removed}">Add a footnote</div>
+        <div class="hidden" data-fragments="{hidden} +0[logo]{removed}">Your logo</div>
+      </div>
+    </section>
+
+    <section id="look">
+      <div class="center middle full">
+        <h2>Appearance</h2>
+        <div class="hidden" data-fragments="{hidden} +0[slide]{newlook}">Customise your look</div>
+      </div>
+    </section>
+
+    <section id="display">
+      <div class="center middle full">
+        <h2>Display</h2>
+        <div>Customise the display</div>
+        <div class="hidden" data-fragments="{hidden} +0[slide]{newdisplay}">to fit your needs</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle full">
+        Write equations thanks to MathJax
+        $$ \int_0^1 x\,dx = \cssId{frac}{\frac 1 2} $$
+        <div class="hidden" data-fragments="{hidden} +0[frac]{pink} 0.5s">Apply fragments to equations</div>
+      </div>
+      <style>.pink { color: hotpink; }</style>
+    </section>
+
+    <section>
+      <div class="center middle">
+        <h2>Include graphs</h2>
+        <svg style="width:50vw; height:50vh;" id="cos" class="hold" data-fragments="{go}"></svg>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle">
+        <h2>Embed iframes</h2>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/lP9PaDs2xgQ" title="YouTube video" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="tiny">Click outside the video frame to give the keyboard back to the slideshow</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center middle">
+        <h2>Thanks!</h2>
+        <div class="small hidden" data-fragments="+0{hidden} 4s 2s">
+          Do not hesitate to use, share, propose new templates or improvements…
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="arrowUp">▲</div>
+  <div id="arrowDown">▼</div>
+
+  <script src="../transition.js"></script>
+  <script src="../graph.js"></script>
+  <script>
+    // Graph of cos on the "Include graphs" slide
+    (function () {
+      var Xmin = -2 * Math.PI, Xmax = 2 * Math.PI, Ymin = -1.5, Ymax = 1.5, N = 160;
+      var target = document.getElementById('cos');
+      var g = new graph(target, [Xmin, Ymin, Xmax, Ymax]);
+      var width = parseFloat(getComputedStyle(target).width);
+      g.axes(width * 0.002);
+      g.plot(Math.cos, [Xmin, Xmax], N, 'stroke-width:' + (width * 0.004));
+    })();
+
+    // Wait for MathJax so that \cssId{frac} exists before fragments are parsed
+    // (and still start if MathJax could not be loaded)
+    var ready = (window.MathJax && MathJax.startup) ? MathJax.startup.promise : Promise.resolve();
+    ready.then(function () {
+      TransitionJS.init({
+        rules: [   // same as the default rule, but slower
+          { selector: '#slides > :not(:first-child)', fragments: '[slides]{--shift++} 1s' },
+        ],
+      });
+      document.addEventListener('transitionjs:change', function (e) {
+        console.log('step ' + e.detail.time + '/' + e.detail.deck.length + ', slide ' + (e.detail.slide + 1));
+      });
+    });
+  </script>
+</body>
+</html>

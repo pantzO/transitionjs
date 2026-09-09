@@ -1,0 +1,13 @@
+{
+  "name": "transitionjs-tests",
+  "private": true,
+  "scripts": {
+    "test": "node run.js",
+    "screenshots": "node screenshots.js"
+  },
+  "devDependencies": {
+    "jsdom": "^26",
+    "puppeteer-core": "^24",
+    "@sparticuz/chromium": "^140"
+  }
+}

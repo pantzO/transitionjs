@@ -1,0 +1,151 @@
+/* themes/sarah.css — free-form theme: absolute positioning helpers, sizes,
+ * effects. Self-contained (does not need base.css).
+ */
+/* colors and fonts */
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Mansalva&display=swap');
+body {
+	--backgroundcolor:#0085A3;
+	--fontcolor:white;
+	font-family:'Roboto', sans-serif;
+	background-color:var(--backgroundcolor);color:var(--fontcolor);
+}
+a {color:var(--fontcolor);}
+.newlook{
+	--backgroundcolor:mediumseagreen;
+	--fontcolor:white;
+	font-family:'Mansalva', cursive;
+	background-color:var(--backgroundcolor);
+	color:var(--fontcolor);
+}
+.newdisplay h2{
+	writing-mode: vertical-rl;
+	position:absolute;
+	left:0;
+	top:50%;
+	transform:translate(0,-50%) rotate(180deg);
+	background-color:var(--fontcolor);color:var(--backgroundcolor);
+	height:calc(100vh - 2em);
+	margin:0;
+	padding:1em;
+}
+/* graph drawing effect */
+.hold polyline {
+	stroke-dasharray: 1400;
+	stroke-dashoffset: 1400;
+}
+.hold.go polyline {
+	animation: dash 3s linear forwards;
+}	
+@keyframes dash {
+	to {stroke-dashoffset: 0;}
+}
+/* several font sizes */
+	#slides>section {font-size:7vh;}
+	.Huge {font-size:20vh;}
+	.big{font-size:10vh;}
+	.normal{font-size:7vh;}
+	.small {font-size:5vh;}
+	.tiny {font-size:3vh;}
+
+/* section display */
+	section {text-align:center;}
+	.left {position:absolute;left:0;}
+	.middle.left {position:absolute;left:0; top:50%; transform:translateY(-50%);}
+	.right {position:absolute;right:0;}
+	.middle.right {position:absolute;right:0; top:50%; transform:translateY(-50%);}
+	.middle	
+		{top: 50%; transform: translateY(-50%); position:absolute; margin-top:0;}
+	.center	
+		{left:50%; transform: translateX(-50%); position:absolute; margin-left:0;}
+	.middle.center	
+		{top: 50%; left:50%;transform: translate(-50%,-50%); position:absolute;}
+	.middle.center.null	
+		{top: 50%; left:50%;transform: translate(-50%,-50%) scale(0); position:absolute;}
+	.boxed {
+		background-color:var(--backgroundcolor);
+		padding:0.7em;
+		border:0.05em var(--fontcolor) solid;
+		border-radius:0.7em;
+	}
+	.full {
+		width:100%;
+	}
+/* list */
+	ul {
+		text-align:left;
+	}
+/* effects */
+	@keyframes blink {
+ 		0% {opacity:0;}
+ 		50% {opacity: 1;}
+ 		100% {opacity: 0;}
+	}
+	.blink {
+		animation-name: blink;
+		animation-duration: 2s;
+		animation-iteration-count: infinite;
+	}
+	.bold {
+		font-weight:bold;
+	}
+	.italic {
+		font-style:italic;
+	}
+	.underline {
+		text-decoration:underline;
+	}
+	.bottom{
+		transform:translateY(100vh);
+	}
+	.blur {
+		filter:blur(3px);
+	}
+	.hidden {
+		opacity:0;
+	}
+	.removed {
+		display:none !important; 
+	}
+
+/* Logo */
+	#logo {
+		position:fixed; width:10vw; top:0;right:0; margin:1.5vw;
+		font-size:1.5vw;
+		text-align:center;
+		z-index:10;
+	}
+/* footnote */
+	#footnote {
+		position:fixed; bottom:0;
+		margin:1em;
+		z-index:10;
+	}
+/* page numbering */
+	#slides {
+		counter-reset:page;
+	}
+	#slides > *::after {
+		counter-increment:page;
+		position:absolute; bottom:0;right:0;
+		font-size:5vh;
+		margin:5vh;
+		content:counter(page);
+	}
+	body.navigate #slides > *::after {
+		font-size:12vh;
+		z-index:100;
+		background-color:var(--backgroundcolor);
+		padding:2vh;
+		border: 0.5vh white solid;
+	}
+
+/* overview */
+	body.navigate #logo, body.navigate #footnote { display:none; }
+
+/* arrows */
+	#arrowUp, #arrowDown {
+		position:fixed; left:1em; font-size:5vh; cursor:pointer; z-index:100; user-select:none;
+	}
+	#arrowUp   { bottom:7vh; }
+	#arrowDown { bottom:1vh; }

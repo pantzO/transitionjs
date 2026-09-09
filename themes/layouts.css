@@ -1,0 +1,119 @@
+/* themes/layouts.css — building blocks for slides, independent of the theme.
+ * Load it after transition.css and before (or with) a theme. Colours come
+ * from the theme through --structure (with sensible fallbacks).
+ *
+ *   Columns   <div class="columns"> <div>…</div> <div>…</div> </div>
+ *             .columns.middle aligns vertically; style="--w:2" makes a column twice wider
+ *   Centring  .centered  (both axes, fills the slide)   .center / .left / .right (text)
+ *             .top / .bottom  push a block to the top or bottom of the main area
+ *   Blocks    <div class="block"><h5>Title</h5><p>…</p></div>
+ *             .block.alert  .block.example   (the three beamer blocks)
+ *   Lists     tuned for slides; .plain (no bullets), .inline (one line), .tight
+ *   Tables    <table>: centred, light rules; .lines (horizontal rules), .zebra, .full
+ *   Figures   <figure><svg/img/…><figcaption>…</figcaption></figure>
+ *   Reveal    <ul class="steps">, <p class="pause">  (default rules of transition.js)
+ *   Emphasis  .emph (structure colour), .alert (alert colour)
+ */
+
+:root {
+	--structure: rgb(20%, 20%, 70%);
+	--alert: rgb(75%, 0%, 0%);
+	--example: rgb(0%, 45%, 15%);
+	--rule: rgba(0, 0, 0, 0.25);
+}
+
+/* ---- columns ---- */
+.columns {
+	display: flex;
+	gap: 1em;
+	width: 100%;
+	align-items: flex-start;
+	text-align: left;
+}
+.columns > * {
+	flex: var(--w, 1);
+	min-width: 0;			/* long formulas wrap instead of overflowing */
+}
+.columns.middle { align-items: center; }
+.columns.center { align-items: stretch; text-align: center; }
+
+/* ---- centring and placement ---- */
+.centered {
+	flex: 1;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+.center { text-align: center; }
+.left   { text-align: left; align-self: flex-start; }
+.right  { text-align: right; align-self: flex-end; }
+.top    { margin-bottom: auto; }
+.bottom { margin-top: auto; }
+.full   { width: 100%; }
+
+/* ---- blocks ---- */
+.block {
+	--block-color: var(--structure);
+	width: 100%;
+	box-sizing: border-box;
+	text-align: left;
+	border-radius: 0.2em;
+	overflow: hidden;
+	margin: 0.3em 0;
+	box-shadow: 0.05em 0.05em 0.2em rgba(0, 0, 0, 0.3);
+	background: color-mix(in srgb, var(--block-color) 12%, white);
+}
+.block.alert   { --block-color: var(--alert); }
+.block.example { --block-color: var(--example); }
+.block > h5 {
+	background: var(--block-color);
+	color: white;
+	margin: 0;
+	padding: 0.15em 0.5em;
+	font-size: 0.8em;
+	font-weight: normal;
+}
+.block > :not(h5) { margin: 0; padding: 0.3em 0.5em; }
+.block > :not(h5) + :not(h5) { padding-top: 0; }
+.block ul, .block ol { padding-left: 1.2em; }
+
+/* ---- lists ---- */
+section ul, section ol {
+	text-align: left;
+	margin: 0.2em 0;
+	padding-left: 1.2em;
+}
+section li + li { margin-top: 0.3em; }
+section li > ul, section li > ol { margin-top: 0.2em; font-size: 0.85em; }
+section li::marker { color: var(--structure); }
+section ul.plain, section ol.plain { list-style: none; padding-left: 0; }
+section ul.inline { padding: 0; list-style: none; }
+section ul.inline > li { display: inline-block; margin: 0 0.6em 0 0; }
+section .tight li + li { margin-top: 0; }
+
+/* ---- tables ---- */
+section table {
+	border-collapse: collapse;
+	margin: 0.3em auto;
+	font-size: 0.85em;
+}
+section th, section td { padding: 0.15em 0.6em; text-align: center; }
+section th { border-bottom: 0.08em solid var(--structure); color: var(--structure); font-weight: normal; }
+section td.left, section th.left { text-align: left; }
+section table.lines td { border-top: 1px solid var(--rule); }
+section table.zebra tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.05); }
+section table.full { width: 100%; }
+
+/* ---- figures ---- */
+section figure { margin: 0.3em 0; text-align: center; }
+section figure > svg, section figure > img { max-width: 100%; }
+section figcaption { font-size: 0.7em; margin-top: 0.2em; }
+
+/* ---- emphasis ---- */
+.emph  { color: var(--structure); }
+.alert:not(.block) { color: var(--alert); }
+.small { font-size: 0.7em; }
+.big   { font-size: 1.3em; }

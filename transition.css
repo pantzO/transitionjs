@@ -1,0 +1,124 @@
+/* transition.css — v2.0
+ * Layout of the deck. Themes take care of everything else.
+ */
+
+body {
+	margin: 0;
+	overflow: hidden;			/* no scrollbars: #slides is moved, not scrolled */
+}
+
+/* ------------------------------------------------------------------
+ * Slides: every direct child of #slides is a slide
+ * ------------------------------------------------------------------ */
+#slides {
+	font-size: 0;				/* no white space between slides */
+}
+#slides > * {
+	font-size: medium;			/* back to the default */
+	box-sizing: border-box;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;			/* nothing spills out of a slide */
+	position: relative;
+	flex-shrink: 0;
+}
+
+/* Default mode: slides stacked in a column, #slides is shifted up.
+ * --shift is the index of the slide on screen; a fragment `[slides]{--shift++}`
+ * on every slide but the first is all it takes to navigate. */
+#slides {
+	--shift: 0;
+	position: absolute;
+	top: calc(var(--shift) * -100%);	/* % of the viewport (containing block) */
+	left: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Inline mode: slides side by side, #slides is shifted left. */
+#slides.inline {
+	top: 0;
+	left: calc(var(--shift) * -100%);
+	flex-direction: row;
+}
+
+/* Fade mode: slides are stacked on top of each other.
+ * A slide with the class `active` is shown; later siblings cover earlier
+ * ones, so a rule `#slides > :not(:first-child)` → `{active} 1s` is enough. */
+#slides.fade {
+	display: block;
+}
+#slides.fade > * {
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	visibility: hidden;
+}
+#slides.fade > :first-child,
+#slides.fade > .active {
+	opacity: 1;
+	visibility: visible;
+}
+
+/* ------------------------------------------------------------------
+ * Transitions: the engine sets --tj-duration / --tj-delay on the targets
+ * of each fragment. A fragment without duration is instantaneous.
+ * Themes may override this for a finer control, e.g.
+ *     .item { transition: opacity var(--tj-duration, 0s); }
+ * ------------------------------------------------------------------ */
+[data-tj-target] {
+	transition: all var(--tj-duration, 0s) var(--tj-delay, 0s);
+}
+
+/* ------------------------------------------------------------------
+ * Default rules (see transition.js): children of `.steps` and elements
+ * with `.pause` appear one after the other, like \pause in beamer.
+ * ------------------------------------------------------------------ */
+.steps > *, .pause { opacity: 0; }
+.steps > .shown, .pause.shown { opacity: 1; }
+
+/* ------------------------------------------------------------------
+ * Arrows (optional): #arrowUp / #arrowDown get `inactive` at the ends.
+ * ------------------------------------------------------------------ */
+#arrowUp.inactive, #arrowDown.inactive {
+	opacity: 0.3;
+}
+
+/* ------------------------------------------------------------------
+ * Overview (Escape): the whole deck laid out in a scaled-down grid.
+ * --scale and --columns can be overridden by a theme.
+ * ------------------------------------------------------------------ */
+body.navigate {
+	overflow: auto;
+}
+body.navigate #slides {
+	--scale: 0.2;
+	--columns: 4;
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: calc(var(--columns) * 100vw);
+	transform: scale(var(--scale));
+	transform-origin: 0 0;
+	/* room around the grid so that any slide can be centred on screen */
+	padding: calc(25vh / var(--scale)) calc(10vw / var(--scale));
+}
+body.navigate #slides > * {
+	position: relative;			/* back into the flow (fade mode) */
+	opacity: 1;
+	visibility: visible;
+	cursor: pointer;
+	outline: calc(1vw / var(--scale)) solid transparent;
+}
+body.navigate #slides > .tj-current {
+	outline-color: currentColor;
+}
+body.navigate #arrowUp,
+body.navigate #arrowDown,
+body.navigate #navigate {
+	display: none;
+}

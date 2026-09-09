@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transition.js — dans l'esprit de beamer</title>
+  <link rel="stylesheet" href="../transition.css">
+  <link rel="stylesheet" href="../themes/base.css">
+  <link rel="stylesheet" href="../themes/layouts.css">
+  <link rel="stylesheet" href="../themes/beamer.css">
+</head>
+<body>
+  <!-- Persistent headline and footline live OUTSIDE #slides -->
+  <nav id="toc"></nav>
+  <div id="footline"><span>O. Pantz</span><span>Transition.js — un exemple inspiré de beamer</span></div>
+
+  <div id="slides">
+    <section>
+      <div class="center">
+        <hgroup>
+          <h1>Transition.js</h1>
+          <h4>Présentations HTML5 — un exemple inspiré de beamer</h4>
+        </hgroup>
+        <address>O. Pantz</address>
+        <time>Septembre 2026</time>
+      </div>
+    </section>
+
+    <section>
+      <h3>Principe</h3>
+      <div>
+        <p>Un environnement <em>section</em> pour chaque diapositive,
+          <span class="hidden" data-fragments="{hidden} 0.5s">chaque diapo pouvant contenir plusieurs couches,</span>
+          <span class="hidden" data-fragments="{hidden} 0.5s">révélées une à une.</span></p>
+      </div>
+    </section>
+
+    <section>
+      <h3>Sommaire</h3>
+      <div><nav class="toc"></nav></div>
+    </section>
+
+    <h2>Dire bonjour</h2>
+
+    <section>
+      <h3>Comment dire bonjour ?</h3>
+      <div>
+        <ul>
+          <li>Bonjour !</li>
+          <li class="hidden" data-fragments="{hidden} 0.4s">Hello !</li>
+          <li class="hidden" data-fragments="{hidden} 0.4s">Guten Tag !</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h3>Le sommaire suit</h3>
+      <h4>Regardez la barre en haut de l'écran</h4>
+      <div>
+        <p>La partie courante est soulignée, les parties à venir sont estompées.</p>
+        <div class="block hidden" data-fragments="{hidden} 0.5s">
+          <h5>Comment ça marche</h5>
+          <p>Chaque page de partie incrémente <code>--current</code> sur la barre ;
+             chaque entrée connaît son indice <code>--i</code> ; le CSS compare les deux.
+             Le JavaScript ne fait rien d'autre.</p>
+        </div>
+      </div>
+    </section>
+
+    <h2>Transitions</h2>
+
+    <section>
+      <h3>Douces…</h3>
+      <div>
+        <p>Une durée après le fragment, et la transition est animée.</p>
+        <p class="hidden" data-fragments="{hidden} 1.5s">Comme ceci, en une seconde et demie.</p>
+      </div>
+    </section>
+
+    <section>
+      <h3>…ou non</h3>
+      <div>
+        <p class="hidden" data-fragments="{hidden}">Sans durée, c'est instantané.</p>
+      </div>
+    </section>
+
+    <h2>Navigation</h2>
+
+    <section>
+      <h3>Clavier, souris, URL</h3>
+      <div>
+        <ul>
+          <li>Espace, Entrée, flèches, PageUp/PageDown, Début/Fin</li>
+          <li class="hidden" data-fragments="{hidden}">Échap : vue d'ensemble, cliquer sur une diapo pour s'y rendre</li>
+          <li class="hidden" data-fragments="{hidden}">L'URL suit la diapo courante ; les entrées du sommaire sont des liens</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="center">
+        <h1>Merci !</h1>
+        <p class="small hidden" data-fragments="+0{hidden} 3s 1s">
+          N'hésitez pas à utiliser, partager, proposer des thèmes ou des améliorations.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <div id="navigate"><span id="arrowUp">▲</span> <span id="arrowDown">▼</span></div>
+
+  <script src="../transition.js"></script>
+  <script src="../tableofcontents.js"></script>
+  <script>
+    // 1. Table of contents (before init: it generates the ids used by the URL hash)
+    TransitionJS.tableOfContents({ target: '#toc, .toc', parts: 'h2', sub: null });
+
+    // 2. The deck
+    TransitionJS.init({
+      rules: [
+        // The default rule brings every slide on screen. Part titles must also advance the
+        // headline, at the same step (+0): this rule is more specific, so it wins — and since
+        // rules do not concatenate, it repeats the --shift++.
+        { selector: '#slides > h2:not(:first-child)', fragments: '[slides]{--shift++} 0.6s +0[toc]{--current++} 0.6s' },
+      ],
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transition.js — exemple minimal</title>
+  <link rel="stylesheet" href="../transition.css">
+  <link rel="stylesheet" href="../themes/base.css">
+  <link rel="stylesheet" href="../themes/layouts.css">
+  <style>
+    body { font-family: Georgia, serif; background: #fdf6e3; color: #333; }
+  </style>
+</head>
+<body>
+  <div id="slides">
+    <section>
+      <div>
+        <h1>Le strict minimum</h1>
+        <p class="small">Espace, Entrée ou flèches pour avancer</p>
+      </div>
+    </section>
+
+    <section>
+      <h3>Trois points</h3>
+      <div>
+        <ul>
+          <li>Une diapo est un enfant direct de <code>#slides</code>.</li>
+          <li class="hidden" data-fragments="{hidden} 0.5s">Un fragment bascule une classe…</li>
+          <li class="hidden" data-fragments="{hidden} 0.5s">…et le CSS fait le reste.</li>
+        </ul>
+      </div>
+    </section>
+
+    <h2>Une page de partie</h2>
+
+    <section>
+      <div>
+        <p>Et l'initialisation tient en une ligne — les règles par défaut font défiler les diapos :</p>
+        <pre class="small">TransitionJS.init();</pre>
+      </div>
+    </section>
+  </div>
+
+  <div id="navigate"><span id="arrowUp">▲</span> <span id="arrowDown">▼</span></div>
+
+  <script src="../transition.js"></script>
+  <script>
+    TransitionJS.init();
+  </script>
+</body>
+</html>

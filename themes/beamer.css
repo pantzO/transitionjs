@@ -1,0 +1,165 @@
+/* themes/beamer.css — a look in the spirit of beamer's default theme.
+ * Load themes/base.css and themes/layouts.css first.
+ *
+ * Expects (all optional):
+ *   <nav id="toc"></nav>    outside #slides: headline with the table of contents,
+ *                           filled by TransitionJS.tableOfContents({ target: '#toc, .toc' })
+ *   <div id="footline">…</div>  outside #slides: author / title
+ *
+ * The headline highlights the current part when `--current` is incremented on
+ * #toc at every part-title slide, e.g. with the rule
+ *   { selector: '#slides > h2:not(:first-child)',
+ *     fragments: '[slides]{--shift++} 0.4s +0[toc]{--current++} 0.4s' }
+ */
+
+body {
+	--structure: rgb(20%, 20%, 70%);	/* beamer's "structure" colour */
+	--structure-light: rgb(40%, 40%, 85%);
+	--text: #1a1a1a;
+	--paper: white;
+	--bar-height: 6vh;
+	font-family: "Latin Modern Sans", "Fira Sans", "Segoe UI", sans-serif;
+	color: var(--text);
+	background: var(--paper);
+}
+a { color: var(--structure); text-decoration: none; }
+
+/* ---- slides ---- */
+#slides > * {
+	font-size: 4.5vh;			/* beamer's text is small: dense slides must fit */
+}
+section {
+	padding-top: calc(var(--bar-height) + 0.4em);
+	padding-bottom: calc(var(--bar-height) + 0.2em);
+}
+section > div {				/* like beamer: text flows from the left; centre with .center / .centered */
+	align-items: stretch;
+	text-align: left;
+}
+section > div.center { align-items: center; text-align: center; }
+section > div > p { margin: 0.3em 0; }
+section > h3 {				/* frame title */
+	color: var(--structure);
+	font-weight: normal;
+	text-align: left;
+	font-size: 1.4em;
+}
+section > h4 {				/* frame subtitle */
+	color: var(--structure-light);
+	font-weight: normal;
+	text-align: left;
+	font-size: 0.8em;
+}
+#slides > h2 {				/* part title slide */
+	color: var(--structure);
+	font-weight: normal;
+	font-size: 11vh;			/* not em: the parent #slides has font-size 0 */
+}
+section hgroup {			/* title slide */
+	background: var(--structure);
+	color: var(--paper);
+	padding: 0.6em 1.2em;
+	border-radius: 0.3em;
+	box-shadow: 0.1em 0.1em 0.3em rgba(0, 0, 0, 0.35);
+	margin-bottom: 1em;
+}
+section hgroup h4 { font-size: 0.6em; margin-top: 0.3em; }
+address { font-style: normal; }
+time { font-size: 0.7em; color: var(--structure-light); }
+
+em     { color: var(--structure); font-style: normal; }
+strong { color: var(--structure); }
+
+/* Lists: beamer's triangle bullets (colour comes from layouts.css ::marker) */
+section ul { list-style-type: "\25B8  "; }
+
+/* ---- headline: table of contents ---- */
+#toc {
+	position: fixed;
+	z-index: 10;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: var(--bar-height);
+	box-sizing: border-box;
+	background: var(--structure);
+	color: var(--paper);
+	font-size: 2.6vh;
+	display: flex;
+	align-items: center;
+	padding: 0 1em;
+	--current: 0;
+}
+#toc ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	gap: 1.5em;
+}
+#toc .toc-level-2 { display: none; }	/* the headline lists parts only */
+#toc a { color: inherit; }
+
+/* Visited / current / upcoming, computed from --i (entry) and --current (#toc).
+ * --future = 1 when i > current, --now = 1 when i == current, 0 otherwise. */
+#toc li {
+	--d: calc(var(--i) - var(--current));
+	--abs: max(var(--d), calc(-1 * var(--d)));
+	--future: clamp(0, calc(var(--d) * 1000), 1);
+	--now: clamp(0, calc(1 - var(--abs)), 1);
+	opacity: calc(1 - 0.6 * var(--future));
+	font-weight: calc(400 + 300 * var(--now));
+	border-bottom: 0.15em solid rgba(255, 255, 255, var(--now));
+	transition: opacity var(--tj-duration, 0s), border-color var(--tj-duration, 0s);
+}
+
+/* Table of contents inside a slide (class "toc") */
+section .toc ul { list-style: none; padding: 0; text-align: left; }
+section .toc .toc-level-1 { margin-top: 0.4em; color: var(--structure); }
+section .toc .toc-level-2 { font-size: 0.75em; margin-left: 1.5em; }
+section .toc a { color: inherit; }
+
+/* ---- footline ---- */
+#footline {
+	position: fixed;
+	z-index: 10;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: var(--bar-height);
+	box-sizing: border-box;
+	background: #eef;
+	color: var(--structure);
+	font-size: 2.6vh;
+	display: flex;
+	align-items: center;
+	gap: 2em;
+	padding: 0 1em 0 1em;
+}
+#footline > * { flex: 1; }
+
+/* Page number, bottom right of every slide (h2 slides included) */
+#slides { counter-reset: page; }
+#slides > *::after {
+	counter-increment: page;
+	content: counter(page);
+	position: absolute;
+	right: 1em;
+	bottom: calc(var(--bar-height) / 2);
+	transform: translateY(50%);
+	font-size: 2.6vh;
+	color: var(--structure);
+	z-index: 11;
+}
+
+/* Arrows */
+#navigate {
+	color: var(--structure);
+	bottom: calc(var(--bar-height) + 0.5rem);
+}
+
+/* ---- overview ---- */
+body.navigate #toc, body.navigate #footline { display: none; }
+body.navigate #slides > * { box-shadow: 0 0 2vh rgba(0, 0, 0, 0.3); }
+body.navigate #slides > .tj-current { outline-color: var(--structure); }
+body.navigate #slides > *::after { font-size: 10vh; }

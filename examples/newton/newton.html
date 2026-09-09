@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La méthode de Newton</title>
+  <link rel="stylesheet" href="../../transition.css">
+  <link rel="stylesheet" href="../../themes/base.css">
+  <link rel="stylesheet" href="../../themes/layouts.css">
+  <link rel="stylesheet" href="../../themes/beamer.css">
+  <script>window.MathJax = { tex: { inlineMath: [['$', '$']] } };</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <nav id="toc"></nav>
+  <div id="footline"><span>O. Pantz</span><span>La méthode de Newton</span></div>
+
+  <div id="slides">
+
+    <section>
+      <div class="center">
+        <hgroup>
+          <h1>La méthode de Newton</h1>
+          <h4>Résoudre $f(x)=0$ en quelques itérations</h4>
+        </hgroup>
+        <address>O. Pantz</address>
+        <time>Septembre 2026</time>
+      </div>
+    </section>
+
+    <section>
+      <h3>Sommaire</h3>
+      <div><nav class="toc"></nav></div>
+    </section>
+
+    <h2>Le principe</h2>
+
+    <section>
+      <h3>L'idée</h3>
+      <div>
+        <p>On cherche une racine de $f : \mathbb{R} \to \mathbb{R}$, dérivable.</p>
+        <ul class="steps">
+          <li>Partir d'un point $x_0$ proche de la racine.</li>
+          <li>Remplacer $f$ par sa tangente en $x_n$.</li>
+          <li>Prendre pour $x_{n+1}$ le zéro de cette tangente :
+            $$ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} $$</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h3>Interprétation géométrique</h3>
+      <div>
+        <figure>
+          <svg id="tangent" style="width:60vw; height:55vh;"></svg>
+        </figure>
+      </div>
+    </section>
+
+    <h2>Convergence</h2>
+
+    <section>
+      <h3>Convergence quadratique</h3>
+      <div>
+        <div class="block">
+          <h5>Théorème</h5>
+          <p>Soit $f$ de classe $\mathcal{C}^2$ et $\alpha$ une racine simple : $f(\alpha)=0$, $f'(\alpha)\neq 0$.
+            Il existe $\delta>0$ tel que, pour tout $x_0 \in\,]\alpha-\delta,\alpha+\delta[$, la suite $(x_n)$ converge vers $\alpha$ et
+            $$ |x_{n+1}-\alpha| \le C\,|x_n-\alpha|^2. $$</p>
+        </div>
+        <div class="block alert pause">
+          <h5>Mais</h5>
+          <p>Loin de la racine, la méthode peut diverger, osciller, ou converger vers une autre racine.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Idée de la preuve</h3>
+      <div>
+        <div class="columns">
+          <div>
+            <strong>Hypothèses</strong>
+            <ul>
+              <li>$f'(\alpha)\neq 0$, donc $f'\neq 0$ près de $\alpha$.</li>
+              <li>$f''$ bornée sur cet intervalle.</li>
+            </ul>
+          </div>
+          <div>
+            <strong>Étapes</strong>
+            <ol>
+              <li>Taylor en $x_n$ : $0 = f(\alpha) = f(x_n) + f'(x_n)(\alpha-x_n) + \tfrac12 f''(\xi)(\alpha-x_n)^2$.</li>
+              <li>Diviser par $f'(x_n)$ et reconnaître $x_{n+1}$.</li>
+              <li>Conclure avec $C = \sup|f''| / (2\inf|f'|)$.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <h2>En pratique</h2>
+
+    <section>
+      <h3>Exemple : $\sqrt{2}$</h3>
+      <div>
+        <p>On applique la méthode à $f(x) = x^2-2$, avec $x_0 = 2$.</p>
+        <table class="lines">
+          <thead><tr><th>$n$</th><th class="left">$x_n$</th><th>chiffres exacts</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td class="left">2</td><td>0</td></tr>
+            <tr><td>1</td><td class="left">1,5</td><td>1</td></tr>
+            <tr><td>2</td><td class="left">1,41<b>6667</b></td><td>3</td></tr>
+            <tr><td>3</td><td class="left">1,414215<b>686</b></td><td>6</td></tr>
+            <tr><td>4</td><td class="left">1,41421356237<b>469</b></td><td>12</td></tr>
+          </tbody>
+        </table>
+        <p class="pause">Le nombre de chiffres exacts double à chaque itération.</p>
+      </div>
+    </section>
+
+    <section>
+      <h3>Bilan</h3>
+      <div>
+        <div class="columns">
+          <div class="block example">
+            <h5>Avantages</h5>
+            <ul>
+              <li>Convergence très rapide.</li>
+              <li>Se généralise à $\mathbb{R}^n$.</li>
+            </ul>
+          </div>
+          <div class="block alert">
+            <h5>Limites</h5>
+            <ul>
+              <li>Il faut calculer $f'$.</li>
+              <li>Il faut partir assez près.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center"><h1>Merci !</h1></div>
+    </section>
+
+  </div>
+
+  <div id="navigate"><span id="arrowUp">▲</span> <span id="arrowDown">▼</span></div>
+
+  <script src="../../transition.js"></script>
+  <script src="../../tableofcontents.js"></script>
+  <script src="../../graph.js"></script>
+  <script>
+    // The figure: f(x) = x² − 2, its tangent at x₀ = 2, and x₁ = 1.5
+    (function () {
+      var svg = document.getElementById('tangent');
+      svg.style.color = 'var(--structure)';
+      var g = new graph(svg, [0.5, -1, 2.5, 3]);
+      var w = svg.getBoundingClientRect().width;
+      g.axes(w * 0.003);
+      g.plot(function (x) { return x * x - 2; }, [0.5, 2.5], 80, 'stroke-width:' + w * 0.005);
+      g.plot(function (x) { return 4 * x - 6; }, [1.4, 2.25], 2, 'stroke-width:' + w * 0.004 + '; stroke-dasharray:' + w * 0.02);
+      [[2, 'x₀'], [1.5, 'x₁']].forEach(function (p) {
+        var t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('x', g.getX(p[0])); t.setAttribute('y', g.getY(0) + w * 0.05);
+        t.setAttribute('text-anchor', 'middle'); t.setAttribute('fill', 'currentColor');
+        t.setAttribute('font-size', w * 0.04); t.textContent = p[1]; svg.appendChild(t);
+      });
+    })();
+
+    TransitionJS.tableOfContents({ target: '#toc, .toc', parts: 'h2', sub: null });
+    var ready = (window.MathJax && MathJax.startup) ? MathJax.startup.promise : Promise.resolve();
+    ready.then(function () {
+      TransitionJS.init({
+        rules: [
+          { selector: '#slides > h2:not(:first-child)', fragments: '[slides]{--shift++} 0.6s +0[toc]{--current++} 0.6s' },
+        ],
+      });
+    });
+  </script>
+</body>
+</html>
