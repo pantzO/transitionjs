@@ -138,9 +138,10 @@ section .toc a { color: inherit; }
 }
 #footline > * { flex: 1; }
 
-/* Page number, bottom right of every slide (h2 slides included) */
+/* Page number, bottom right of every slide (h2 slides included) 
+  class pagenumber has to be added to slides to display number */
 #slides { counter-reset: page; }
-#slides > *::after {
+#slides.pagenumber > *::after {
 	counter-increment: page;
 	content: counter(page);
 	position: absolute;
