@@ -17,7 +17,7 @@ body {
 	font-size: medium;			/* back to the default */
 	box-sizing: border-box;
 	width: 100vw;
-	height: 100vh;
+	height: 100svh;
 	overflow: hidden;			/* nothing spills out of a slide */
 	position: relative;
 	flex-shrink: 0;
