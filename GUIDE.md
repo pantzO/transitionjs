@@ -219,7 +219,7 @@ L'URL suit la diapo courante : `#id` si la diapo a un `id`, sinon `#n` avec n so
 - de mettre des liens internes `<a href="#conclusion">` ;
 - de modifier l'URL à la main.
 
-Dans les trois cas, le moteur rejoue les pas nécessaires, sans animation, jusqu'au début de la diapo demandée. L'historique du navigateur n'est pas alimenté par la navigation (le bouton Retour ne remonte pas dans les diapos, c'est voulu). Un hash inconnu est remplacé par celui de la diapo courante.
+Dans les trois cas, le moteur rejoue les pas nécessaires, sans animation, jusqu'au début de la diapo demandée. Les clics sur les liens `<a href="#id">` vers une diapo sont pris en charge par le moteur, qui empêche le navigateur de faire en plus défiler le document vers l'élément visé — c'est ce qui rendait ces liens inutilisables dans la version 1. L'historique du navigateur n'est pas alimenté par la navigation (le bouton Retour ne remonte pas dans les diapos, c'est voulu). Un hash inconnu est remplacé par celui de la diapo courante.
 
 ### Vue d'ensemble
 

@@ -298,13 +298,17 @@
       this._onKey = this._onKey.bind(this);
       this._onHash = this._onHash.bind(this);
       this._onClick = this._onClick.bind(this);
+      this._onAnchorClick = this._onAnchorClick.bind(this);
       this._onPointerDown = this._onPointerDown.bind(this);
       this._onPointerUp = this._onPointerUp.bind(this);
       this._next = () => this.next();
       this._prev = () => this.prev();
 
       if (opts.keyboard !== false) document.addEventListener('keydown', this._onKey);
-      if (this.useHash) global.addEventListener('hashchange', this._onHash);
+      if (this.useHash) {
+        global.addEventListener('hashchange', this._onHash);
+        document.addEventListener('click', this._onAnchorClick);
+      }
       if (opts.touch !== false) {
         this.container.addEventListener('pointerdown', this._onPointerDown);
         this.container.addEventListener('pointerup', this._onPointerUp);
@@ -316,6 +320,7 @@
       const initialHash = currentHash();
       this._refresh();               // also writes #1 in the URL…
       if (this.useHash) this._goToHash(initialHash); // …so the incoming hash is read first
+      this._unscroll();
     }
 
     _defaultRules() {
@@ -462,8 +467,29 @@
 
     _onHash() {
       // replaceState() never fires hashchange: this only runs on user-driven changes
-      // (typed URL, <a href="#id">, back button). An unknown hash is reset.
+      // (typed URL, back button). An unknown hash is reset.
       if (!this._goToHash(currentHash())) this._syncHash();
+      this._unscroll();
+    }
+
+    /** Links to a slide (<a href="#id">) are handled here, so that the browser
+     *  does not also scroll the document to the target element. */
+    _onAnchorClick(e) {
+      if (e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || a.target) return;
+      let h = a.getAttribute('href').slice(1);
+      try { h = decodeURIComponent(h); } catch (x) { /* keep as is */ }
+      if (!this.slides.some((s) => s.id === h) && !/^\d+$/.test(h)) return; // not a slide: let it be
+      e.preventDefault();
+      this._goToHash(h);
+      this._syncHash();
+    }
+
+    /** Undo any scrolling the browser did on its own (fragment navigation). */
+    _unscroll() {
+      if (this.overview) return;
+      if (global.scrollX || global.scrollY) global.scrollTo(0, 0);
     }
 
     /* ---- overview ---- */
@@ -528,6 +554,7 @@
     destroy() {
       document.removeEventListener('keydown', this._onKey);
       global.removeEventListener('hashchange', this._onHash);
+      document.removeEventListener('click', this._onAnchorClick);
       this.container.removeEventListener('pointerdown', this._onPointerDown);
       this.container.removeEventListener('pointerup', this._onPointerUp);
       this.container.removeEventListener('click', this._onClick);
