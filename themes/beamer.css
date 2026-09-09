@@ -113,10 +113,29 @@ section ul { list-style-type: "\25B8  "; }
 	transition: opacity var(--tj-duration, 0s), border-color var(--tj-duration, 0s);
 }
 
-/* Table of contents inside a slide (class "toc") */
+/* Table of contents inside a slide (class "toc"): numbered parts in a
+ * ball, like beamer's "rounded" inner theme. The number is --i (set by
+ * tableofcontents.js); `content` only takes counters, so a counter is
+ * set from --i to turn it into text. For plain "1." numbers, replace
+ * the ::before content by  counter(part) ".";  and drop the ball. */
 section .toc ul { list-style: none; padding: 0; text-align: left; }
-section .toc .toc-level-1 { margin-top: 0.4em; color: var(--structure); }
-section .toc .toc-level-2 { font-size: 0.75em; margin-left: 1.5em; }
+section .toc .toc-level-1 { margin-top: 0.5em; color: var(--structure); counter-reset: part var(--i); }
+section .toc .toc-level-1::before {
+	content: counter(part);
+	display: inline-block;
+	width: 1.3em;
+	height: 1.3em;
+	line-height: 1.3em;
+	margin-right: 0.5em;
+	border-radius: 50%;
+	text-align: center;
+	font-size: 0.8em;
+	background: var(--structure);
+	color: var(--paper);
+	box-shadow: 0.05em 0.05em 0.15em rgba(0, 0, 0, 0.4);
+	vertical-align: 0.1em;
+}
+section .toc .toc-level-2 { font-size: 0.75em; margin-left: 2.4em; }
 section .toc a { color: inherit; }
 
 /* ---- footline ---- */
