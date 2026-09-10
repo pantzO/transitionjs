@@ -36,6 +36,10 @@
  *   });
  * Without a key the deck only displays results (a second screen, a student's laptop).
  * Opening the deck with ?key=…&reset=1 forgets the votes of a previous run of the session.
+ *
+ * The key is read from the URL once, kept in the tab's sessionStorage, and removed
+ * from the address bar right away — so that it is not projected with the slides.
+ * Type it before plugging the projector; it survives reloads, not closing the tab.
  */
 (function (global) {
   'use strict';
@@ -44,7 +48,20 @@
     opts = opts || {};
     const server = String(opts.server || '').replace(/\/$/, '');
     const session = opts.session || 'default';
-    const key = opts.key !== undefined ? opts.key : new URLSearchParams(location.search).get('key') || '';
+    const params = new URLSearchParams(location.search);
+    let key = opts.key !== undefined ? opts.key : params.get('key') || '';
+    const wantReset = !!params.get('reset');
+    try {
+      if (opts.key === undefined) {
+        if (key) sessionStorage.setItem('tj-poll-key', key);
+        else key = sessionStorage.getItem('tj-poll-key') || '';
+      }
+    } catch (e) { /* storage unavailable: the key only lives in this page load */ }
+    if (params.has('key') || params.has('reset')) {     // never leave the key in the address bar
+      params.delete('key'); params.delete('reset');
+      const q = params.toString();
+      history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + location.hash);
+    }
     if (!server) { console.warn('[TransitionJS] polls: no server given'); return null; }
     const api = server + '/api/' + encodeURIComponent(session) + '/';
     const voteUrl = server + '/s/' + encodeURIComponent(session);
@@ -71,8 +88,7 @@
         .catch((e) => console.warn('[TransitionJS] polls: ' + action + ' failed', e));
     }
 
-    const params = new URLSearchParams(location.search);
-    const ready = (key && params.get('reset')) ? post('reset', {}) : Promise.resolve();
+    const ready = (key && wantReset) ? post('reset', {}) : Promise.resolve();
 
     // Presenter: react to the `open` class
     const wasOpen = new WeakMap();

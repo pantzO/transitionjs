@@ -447,7 +447,7 @@ Sur la première diapo, `<div class="poll-join" data-poll-url><img class="poll-q
 TransitionJS.polls({ server: 'https://…apps.math.cnrs.fr', session: 'r309-2026-09-15' });
 ```
 
-Ouvrez la présentation avec `?key=…` (la clé du serveur) pour être le présentateur ; sans clé, la page n'affiche que les résultats. Voir `examples/poll.html`.
+Ouvrez la présentation avec `?key=…` (la clé du serveur) pour être le présentateur ; la clé est aussitôt retirée de la barre d'adresse et conservée le temps de l'onglet, pour ne pas être projetée. Sans clé, la page n'affiche que les résultats. Voir `examples/poll.html`.
 
 ## 12. Tests
 

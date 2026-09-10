@@ -10,7 +10,7 @@ Un serveur minuscule (Node, un seul fichier, une dépendance pour les QR codes) 
 
 Une *session* est une chaîne quelconque (`r309-2026-09-15`), une par cours ; la diapo la déclare dans `TransitionJS.polls({ … })`. Les questions d'une session sont identifiées par leur `data-poll`.
 
-Le présentateur est celui qui connaît la clé (`POLL_KEY` du serveur) : il ouvre sa présentation avec `?key=…` dans l'adresse. Sans clé, la même page n'affiche que les résultats — pratique pour un second écran. Avec `?key=…&reset=1`, les votes d'une séance précédente de la même session sont oubliés.
+Le présentateur est celui qui connaît la clé (`POLL_KEY` du serveur) : il ouvre sa présentation avec `?key=…` dans l'adresse. La clé est aussitôt retirée de la barre d'adresse (elle reste dans l'onglet, rechargements compris, jusqu'à sa fermeture) : tapez-la avant de brancher le projecteur. Sans clé, la même page n'affiche que les résultats — pratique pour un second écran. Avec `?key=…&reset=1`, les votes d'une séance précédente de la même session sont oubliés.
 
 ## Essai local
 
