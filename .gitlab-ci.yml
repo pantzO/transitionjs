@@ -7,7 +7,7 @@ pages:
   image: pandoc/core:latest
   script:
     - mkdir -p public
-    - cp -r index.html LICENSE transition.js transition.css tableofcontents.js graph.js themes examples docs public/
+    - cp -r index.html LICENSE transition.js transition.css tableofcontents.js graph.js poll.js poll.css themes examples docs public/
     - pandoc README.md -s -f gfm -t html5 --metadata pagetitle="Transition.js" --metadata lang=en -c docs/doc.css -o public/readme.html
     - pandoc GUIDE.md  -s -f gfm -t html5 --metadata pagetitle="Transition.js - guide" --metadata lang=fr -c docs/doc.css -o public/guide.html
   artifacts:

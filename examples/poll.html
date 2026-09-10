@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transition.js — sondages en direct</title>
+  <link rel="stylesheet" href="../transition.css">
+  <link rel="stylesheet" href="../themes/base.css">
+  <link rel="stylesheet" href="../themes/layouts.css">
+  <link rel="stylesheet" href="../themes/beamer.css">
+  <link rel="stylesheet" href="../poll.css">
+</head>
+<body>
+  <nav id="toc"></nav>
+  <div id="footline"><span>O. Pantz</span><span>Sondages en direct</span></div>
+
+  <div id="slides" class="pagenumber">
+
+    <section>
+      <div class="center">
+        <hgroup><h1>Sondages en direct</h1><h4>Répondez depuis votre téléphone</h4></hgroup>
+        <div class="poll-join" data-poll-url><img class="poll-qr" alt="QR code"></div>
+      </div>
+    </section>
+
+    <h2>La méthode de Newton</h2>
+
+    <section>
+      <h3>Question 1</h3>
+      <div>
+        <div class="poll" data-poll="q1" data-fragments="{open} {open results} {answer}">
+          <p>La méthode de Newton converge vers une racine de f dès que f est de classe C².</p>
+          <ul>
+            <li>Vrai</li>
+            <li class="correct">Faux</li>
+            <li>Seulement si f est un polynôme</li>
+          </ul>
+        </div>
+        <p class="small pause">Il faut aussi partir assez près d'une racine simple.</p>
+      </div>
+    </section>
+
+    <section>
+      <h3>Question 2</h3>
+      <h4>Plusieurs réponses possibles</h4>
+      <div>
+        <div class="poll" data-poll="q2" data-multiple data-fragments="{open} {open results} {answer}">
+          <p>Pour f(x) = x² − 2 et x₀ = 2, lesquelles de ces valeurs sont des itérés de Newton ?</p>
+          <ul>
+            <li class="correct">1,5</li>
+            <li>1,4</li>
+            <li class="correct">1,41666…</li>
+            <li>1,42</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="center"><h1>Merci !</h1></div>
+    </section>
+  </div>
+
+  <div id="navigate"><span id="arrowUp">▲</span> <span id="arrowDown">▼</span></div>
+
+  <script src="../transition.js"></script>
+  <script src="../tableofcontents.js"></script>
+  <script src="../poll.js"></script>
+  <script>
+    TransitionJS.tableOfContents({ target: '#toc', parts: 'h2', sub: null });
+    TransitionJS.init({
+      rules: [
+        { selector: '#slides > h2:not(:first-child)', fragments: '[slides]{--shift++} 0.6s +0[toc]{--current++} 0.6s' },
+      ],
+    });
+    // Open this deck with ?key=… to be the presenter (the key is the server's POLL_KEY).
+    TransitionJS.polls({
+      server: new URLSearchParams(location.search).get('server') || 'http://localhost:8080',
+      session: 'demo',
+    });
+  </script>
+</body>
+</html>

@@ -103,10 +103,18 @@ themes/beamer.css    the look of beamer, with the persistent headline
 themes/sarah.css     a free-form theme: absolute positioning, big type, effects
 tableofcontents.js   tables of contents, ids for the URL, indices for the headline
 graph.js             function graphs in SVG, animatable
-examples/            minimal, beamer, tour (every feature), fade, newton (beamer side by side)
+poll.js, poll.css    live polls on a slide (deck side)
+server/              the poll server: Node, one file, deploys on PLMshift
+examples/            minimal, beamer, tour (every feature), fade, newton (beamer side by side), poll
 GUIDE.md             the full guide (in French for now) — [online](https://pantz.pages.math.cnrs.fr/transitionjs/guide.html)
 test/                logic tests under jsdom, screenshots under headless Chromium
 ```
+
+## Why HTML, and why no PDF export
+
+Because a PDF cannot play a video, run an animation, let you type a number and see a curve move, or take a vote. Transition.js started as a way to put video in a talk, back when Linux PDF viewers could not; what it turned into is a deck where anything a browser can do is a slide. Beamer compatibility is the on-ramp, not the destination — and that is why there is no export to PDF: a talk that exports to PDF was not using the browser.
+
+**Live polls** are the first thing built on that idea: a question on a slide, students answer from their phones through a QR code, the bars grow on the slide as votes come in, then the answer lights up. `poll.js` and `poll.css` do the deck side without creating a single DOM node (votes become CSS variables); a fifty-line server in `server/` does the rest, and deploys on PLMshift in three commands. See [`examples/poll.html`](examples/poll.html) and [`server/README.md`](server/README.md).
 
 ## Why not reveal.js / impress.js / …?
 

@@ -16,8 +16,9 @@ Contenu :
 8. [API et événements](#8-api-et-événements)
 9. [Compagnons : sommaire, graphes, MathJax](#9-compagnons)
 10. [Migration depuis la version 1](#10-migration-depuis-la-version-1)
-11. [Tests](#11-tests)
-12. [Pièges connus](#12-pièges-connus)
+11. [Sondages en direct](#11-sondages-en-direct)
+12. [Tests](#12-tests)
+13. [Pièges connus](#13-pièges-connus)
 
 ## 1. Démarrage
 
@@ -32,6 +33,7 @@ themes/beamer.css    dans l'esprit de beamer, avec sommaire persistant (nécessi
 themes/sarah.css     thème libre : positionnement absolu, tailles, effets (autonome)
 tableofcontents.js   génération de sommaires
 graph.js             tracé de fonctions en SVG
+poll.js, poll.css    sondages en direct (avec le serveur de server/)
 examples/            minimal, beamer, tour, fade, newton (le même exposé en beamer et en Transition.js)
 ```
 
@@ -421,7 +423,33 @@ Chargez MathJax 3, puis initialisez le deck une fois la composition terminée, a
 
 Ce qui a été corrigé au passage : la navigation par l'URL (le premier changement de hash était avalé, et un `id` numérique était pris pour un rang), les durées qui restaient collées après un saut ou un passage en vue d'ensemble, les `h2` non décomptés, la vue d'ensemble sans CSS, Espace et Page suiv. qui faisaient défiler la page.
 
-## 11. Tests
+## 11. Sondages en direct
+
+`poll.js` et `poll.css` (optionnels) ajoutent des questions auxquelles les étudiants répondent depuis leur téléphone, avec les résultats en direct sur la diapo. Il faut un petit serveur, fourni dans `server/` ; son `README.md` explique comment l'essayer et le déployer sur PLMshift.
+
+Une question est un élément de la diapo :
+
+```html
+<div class="poll" data-poll="q1" data-fragments="{open} {open results} {answer}">
+  <p>La méthode de Newton converge dès que f est C².</p>
+  <ul>
+    <li>Vrai</li>
+    <li class="correct">Faux</li>
+  </ul>
+</div>
+```
+
+`data-poll` identifie la question dans la session ; `data-multiple` autorise plusieurs réponses ; `class="correct"` marque la ou les bonnes. Trois classes, posées par des fragments comme n'importe quelle autre, font tout : `open` (la question part sur les téléphones, les votes sont comptés), `results` (les barres), `answer` (la bonne réponse ressort). Le script ne crée aucun nœud : il écrit `--votes` sur chaque option et `--total` sur la question, et `poll.css` dessine à partir de là.
+
+Sur la première diapo, `<div class="poll-join" data-poll-url><img class="poll-qr"></div>` affiche le QR code et l'adresse à taper. Initialisation, après `transition.js` :
+
+```js
+TransitionJS.polls({ server: 'https://…apps.math.cnrs.fr', session: 'r309-2026-09-15' });
+```
+
+Ouvrez la présentation avec `?key=…` (la clé du serveur) pour être le présentateur ; sans clé, la page n'affiche que les résultats. Voir `examples/poll.html`.
+
+## 12. Tests
 
 `test/run.js` vérifie la logique du moteur sous jsdom (analyse, règles, spécificité, temps de début des diapos, hash, bornes) ; `test/screenshots.js` rend les exemples dans un Chromium sans écran et écrit des captures dans `test/shots/`.
 
@@ -429,7 +457,7 @@ Ce qui a été corrigé au passage : la navigation par l'URL (le premier changem
 cd test && npm install && npm test && npm run screenshots
 ```
 
-## 12. Pièges connus
+## 13. Pièges connus
 
 - **Une diapo n'apparaît pas** : elle n'a pas de fragment qui l'amène (vérifier la console), ou un `data-fragments` en ligne l'a soustraite à la règle.
 - **Le sommaire ne suit pas** : `#toc` n'est pas cible d'un fragment (il faut `+0[toc]{--current++}` dans la règle des `h2` — avec le `+0`, sinon il suit avec un pas de retard), ou `tableofcontents.js` a été appelé après `init`.

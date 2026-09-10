@@ -1,0 +1,95 @@
+/* poll.css — display of live polls (see poll.js). Theme-agnostic; colours
+ * come from --structure / --example / --alert (layouts.css or the theme).
+ *
+ * States (classes on .poll, toggled by fragments):
+ *   open      voting: shows the number of voters so far
+ *   results   bars proportional to the votes, with the counts
+ *   answer    the .correct options stand out, the others fade
+ */
+
+.poll { width: 100%; text-align: left; --total: 0; --voters: 0; }
+.poll > p { margin: 0 0 0.3em; }
+.poll ul, .poll ol { list-style: none; padding: 0; margin: 0.2em 0; }
+.poll li {
+	isolation: isolate;
+	position: relative;
+	padding: 0.15em 0.6em;
+	margin: 0.25em 0;
+	border-radius: 0.3em;
+	--votes: 0;
+	transition: opacity 0.4s;
+}
+
+/* The bar: a background layer, width = votes / total */
+.poll li::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;			/* explicit: themes style li::before too (bullets) */
+	width: 0;
+	z-index: -1;
+	border-radius: inherit;
+	box-shadow: none;
+	background: color-mix(in srgb, var(--structure, #33b) 25%, transparent);
+	transition: width 0.6s ease-out;
+}
+.poll.results li::before {
+	width: calc(100% * var(--votes) / max(var(--total), 1));
+}
+/* The count, at the right: a CSS counter turns --votes into text */
+.poll.results li::after {
+	counter-reset: votes var(--votes);
+	content: counter(votes);
+	position: absolute;
+	right: 0.6em;
+	opacity: 0.7;
+	font-size: 0.8em;
+	top: 0.3em;
+}
+
+/* Voting in progress: number of voters */
+.poll.open::after {
+	counter-reset: voters var(--voters);
+	content: "Vote ouvert — " counter(voters) " réponse(s)";
+	display: block;
+	margin-top: 0.4em;
+	font-size: 0.7em;
+	color: var(--structure, #33b);
+	animation: poll-pulse 1.5s ease-in-out infinite;
+}
+@keyframes poll-pulse { 50% { opacity: 0.5; } }
+.poll.results::after {
+	counter-reset: voters var(--voters);
+	content: counter(voters) " réponse(s)";
+	display: block;
+	margin-top: 0.4em;
+	font-size: 0.7em;
+	opacity: 0.7;
+	animation: none;
+}
+
+/* The answer */
+.poll.answer li { opacity: 0.45; }
+.poll.answer li.correct {
+	opacity: 1;
+	font-weight: bold;
+	color: var(--example, #072);
+}
+.poll.answer li.correct::before {
+	background: color-mix(in srgb, var(--example, #072) 30%, transparent);
+}
+
+/* QR code block for the first slide:
+ *   <div class="poll-join" data-poll-url><img class="poll-qr" alt=""></div>  */
+.poll-join { text-align: center; }
+.poll-join img.poll-qr { width: 40vh; height: 40vh; }
+.poll-join::after { content: attr(data-poll-url); display: block; font-size: 0.8em; margin-top: 0.3em; }
+
+/* Server unreachable: a discreet mark on every poll */
+html:not(.poll-online) .poll::before {
+	content: "(hors ligne)";
+	font-size: 0.6em;
+	opacity: 0.5;
+	float: right;
+}

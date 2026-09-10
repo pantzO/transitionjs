@@ -1,0 +1,14 @@
+{
+  "name": "transitionjs-poll",
+  "version": "1.0.0",
+  "description": "Live polls for Transition.js decks: students vote from their phones, the slide shows the results",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  },
+  "license": "MIT"
+}

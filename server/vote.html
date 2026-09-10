@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vote</title>
+  <style>
+    :root { --structure: rgb(20%, 20%, 70%); --ok: rgb(0%, 45%, 15%); }
+    html { -webkit-text-size-adjust: 100%; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 1.2em; max-width: 34em; margin: 0 auto; color: #1a1a1a; line-height: 1.4; }
+    h1 { font-size: 1.15em; font-weight: normal; color: var(--structure); margin: 0.5em 0 1em; }
+    #question { font-size: 1.2em; margin: 0 0 0.8em; }
+    .option { display: block; width: 100%; box-sizing: border-box; text-align: left; font: inherit; font-size: 1.1em;
+      padding: 0.7em 0.9em; margin: 0.5em 0; border: 2px solid var(--structure); border-radius: 0.5em; background: white; color: var(--structure); cursor: pointer; }
+    .option.chosen { background: var(--structure); color: white; }
+    #send { display: none; margin-top: 1em; font-size: 1.1em; padding: 0.7em 1.4em; border: 0; border-radius: 0.5em; background: var(--structure); color: white; }
+    .multiple #send { display: inline-block; }
+    #status { margin-top: 1.2em; color: #555; min-height: 1.4em; }
+    #status.ok { color: var(--ok); }
+    #waiting { color: #555; font-size: 1.1em; }
+    .hidden { display: none; }
+    .hint { font-size: 0.9em; color: #777; }
+  </style>
+</head>
+<body>
+  <h1>Vote</h1>
+  <div id="waiting">En attente de la prochaine question…</div>
+  <div id="poll" class="hidden">
+    <p id="question"></p>
+    <p class="hint" id="hint"></p>
+    <div id="options"></div>
+    <button id="send">Envoyer</button>
+    <div id="status"></div>
+  </div>
+  <script>
+    (function () {
+      var session = location.pathname.split('/').filter(Boolean).pop();
+      var api = location.origin + '/api/' + session + '/';
+      var token = localStorage.getItem('tj-poll-token');
+      if (!token) { token = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('tj-poll-token', token); }
+      var current = null, chosen = [], sentFor = null;
+      var $ = function (id) { return document.getElementById(id); };
+
+      function render(q) {
+        var same = current && q && current.id === q.id;
+        current = q;
+        $('waiting').classList.toggle('hidden', !!q);
+        $('poll').classList.toggle('hidden', !q);
+        if (!q) return;
+        if (same) return;                       // counts changed, not the question: keep the buttons
+        chosen = []; sentFor = null;
+        $('question').textContent = q.question;
+        $('hint').textContent = q.multiple ? 'Plusieurs réponses possibles' : 'Une seule réponse';
+        $('poll').classList.toggle('multiple', q.multiple);
+        $('status').textContent = ''; $('status').className = '';
+        var box = $('options'); box.innerHTML = '';
+        q.options.forEach(function (text, i) {
+          var b = document.createElement('button');
+          b.className = 'option'; b.textContent = text; b.dataset.i = i;
+          b.onclick = function () {
+            if (q.multiple) {
+              var k = chosen.indexOf(i);
+              if (k >= 0) chosen.splice(k, 1); else chosen.push(i);
+              b.classList.toggle('chosen');
+            } else {
+              chosen = [i];
+              Array.prototype.forEach.call(box.children, function (c) { c.classList.toggle('chosen', c === b); });
+              send();
+            }
+          };
+          box.appendChild(b);
+        });
+      }
+
+      function send() {
+        if (!current || !chosen.length) { $('status').textContent = 'Choisissez une réponse.'; return; }
+        fetch(api + 'vote', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token, poll: current.id, choices: chosen }) })
+          .then(function (r) { return r.json(); })
+          .then(function (r) {
+            $('status').className = r.ok ? 'ok' : '';
+            $('status').textContent = r.ok ? 'Réponse enregistrée. Vous pouvez la changer tant que le vote est ouvert.' : 'Le vote est fermé.';
+          })
+          .catch(function () { $('status').className = ''; $('status').textContent = 'Pas de réseau… réessayez.'; });
+      }
+      $('send').onclick = send;
+
+      function listen() {
+        var es = new EventSource(api + 'events');
+        es.addEventListener('state', function (e) { render(JSON.parse(e.data).current); });
+        es.onerror = function () { /* EventSource reconnects by itself */ };
+      }
+      listen();
+    })();
+  </script>
+</body>
+</html>
