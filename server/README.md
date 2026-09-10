@@ -26,7 +26,15 @@ Ouvrez `examples/poll.html?key=secret` d'un côté, `http://localhost:8080/s/dem
 
 PLMshift est la plateforme d'applications de la PLM (OpenShift / OKD). Elle construit et héberge le serveur directement depuis le dépôt PLMlab. Une fois pour toutes :
 
-**1. Le client `oc`.** Depuis la console https://plmshift.math.cnrs.fr (connexion avec le compte PLM), menu *?* → *Command line tools* : téléchargez `oc` pour Linux, décompressez, placez le binaire dans `~/bin`. Puis, en haut à droite, votre nom → *Copy login command* → *Display token* : collez la commande `oc login --token=… --server=https://api.math.cnrs.fr:6443` dans un terminal.
+**1. Le client `oc`.** Depuis la console https://plmshift.math.cnrs.fr (connexion avec le compte PLM), menu *?* → *Command line tools*, ou directement https://plmshift.math.cnrs.fr/command-line-tools : téléchargez `oc` pour Linux, puis
+
+```
+mkdir -p ~/bin && tar xf ~/Téléchargements/oc.tar -C ~/bin oc && chmod +x ~/bin/oc
+```
+
+(`export PATH=~/bin:$PATH` si le terminal ne le trouve pas tout de suite). Puis, en haut à droite de la console, votre nom → *Copy login command* → *Display token* : collez la commande `oc login --token=… --server=https://api.math.cnrs.fr:6443` dans un terminal. Le jeton expire au bout de quelques heures.
+
+> **Le port 6443 est souvent filtré** par les réseaux d'établissement (`dial tcp …:6443: i/o timeout`). Passez par le partage de connexion d'un téléphone le temps du déploiement — `oc` ne sert qu'à ça —, ou faites tout depuis la console web : *Create a Project*, puis en vue *Developer*, *+Add* → *Import from Git* avec l'URL du dépôt, `/server` comme *Context dir*, Node.js comme constructeur, la variable d'environnement `POLL_KEY`, et une route sécurisée (*Edge*).
 
 **2. Le projet et l'application.** Choisissez une clé longue et gardez-la (c'est elle qui protège l'ouverture des questions) :
 
@@ -38,7 +46,7 @@ oc create route edge poll --service=poll
 oc get route poll
 ```
 
-La dernière commande donne l'adresse publique, de la forme `poll-transitionjs-poll.apps.math.cnrs.fr`. La construction prend deux ou trois minutes (`oc logs -f bc/poll` pour la suivre ; `oc get pods` doit finir par montrer un pod `poll-…` *Running*).
+La dernière commande donne l'adresse publique, de la forme `poll-transitionjs-poll.apps.math.cnrs.fr`. La construction prend deux ou trois minutes : `oc get pods` montre d'abord `poll-1-build` (le pod qui *construit* l'image — ce n'est pas encore le serveur), et l'adresse répond « Application is not available » tant qu'il tourne. Quand il passe à `Completed`, un pod `poll-…-…` apparaît en `Running` : c'est le serveur, et l'adresse répond. `oc logs -f bc/poll` suit la construction, `oc logs deployment/poll` montre le serveur (« poll server listening on port 8080 »).
 
 **3. Dans vos présentations :**
 
