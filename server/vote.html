@@ -20,6 +20,11 @@
     #waiting { color: #555; font-size: 1.1em; }
     .hidden { display: none; }
     .hint { font-size: 0.9em; color: #777; }
+    #message { font-size: 1.2em; white-space: pre-line; margin: 0 0 1.2em; }
+    #score { font-size: 1.3em; color: var(--structure); margin: 0 0 0.6em; }
+    #detail { list-style: none; padding: 0; margin: 0; color: #555; }
+    #detail li { margin: 0.2em 0; }
+    #detail .ok { color: var(--ok); }
   </style>
 </head>
 <body>
@@ -32,6 +37,11 @@
     <button id="send">Envoyer</button>
     <div id="status"></div>
   </div>
+  <div id="end" class="hidden">
+    <p id="message"></p>
+    <p id="score"></p>
+    <ul id="detail"></ul>
+  </div>
   <script>
     (function () {
       var session = location.pathname.split('/').filter(Boolean).pop();
@@ -39,11 +49,17 @@
       var token = localStorage.getItem('tj-poll-token');
       if (!token) { token = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('tj-poll-token', token); }
       var current = null, chosen = [], sentFor = null;
+      // This phone's own votes, kept on the phone only, to compute its score at the end.
+      // They are tied to the server's run id: a reset (or a restart) starts afresh.
+      var storeKey = 'tj-poll-votes-' + session, mine = { run: null, votes: {} };
+      try { mine = JSON.parse(localStorage.getItem(storeKey)) || mine; } catch (e) {}
+      function save() { try { localStorage.setItem(storeKey, JSON.stringify(mine)); } catch (e) {} }
       var $ = function (id) { return document.getElementById(id); };
 
       function render(q) {
         var same = current && q && current.id === q.id;
         current = q;
+        $('end').classList.add('hidden');
         $('waiting').classList.toggle('hidden', !!q);
         $('poll').classList.toggle('hidden', !q);
         if (!q) return;
@@ -78,6 +94,7 @@
           body: JSON.stringify({ token: token, poll: current.id, choices: chosen }) })
           .then(function (r) { return r.json(); })
           .then(function (r) {
+            if (r.ok && current) { mine.votes[current.id] = r.choices; save(); }
             $('status').className = r.ok ? 'ok' : '';
             $('status').textContent = r.ok ? 'Réponse enregistrée. Vous pouvez la changer tant que le vote est ouvert.' : 'Le vote est fermé.';
           })
@@ -85,9 +102,39 @@
       }
       $('send').onclick = send;
 
+      function sameSet(a, b) {
+        if (!a || !b || a.length !== b.length) return false;
+        return a.every(function (x) { return b.indexOf(x) >= 0; });
+      }
+
+      function renderEnd(end) {
+        current = null;
+        $('waiting').classList.add('hidden');
+        $('poll').classList.add('hidden');
+        $('end').classList.remove('hidden');
+        $('message').textContent = end.message || 'Merci !';
+        var ids = Object.keys(end.answers || {}), good = 0, answered = 0, box = $('detail');
+        box.innerHTML = '';
+        ids.forEach(function (id, k) {
+          var v = mine.votes[id], ok = sameSet(v, end.answers[id]);
+          if (v) answered++;
+          if (ok) good++;
+          var li = document.createElement('li');
+          li.textContent = 'Question ' + (k + 1) + ' : ' + (!v ? 'pas de réponse' : ok ? 'juste ✓' : 'faux ✗');
+          if (ok) li.className = 'ok';
+          box.appendChild(li);
+        });
+        $('score').textContent = !ids.length ? '' :
+          answered ? 'Votre score : ' + good + ' / ' + ids.length : 'Vous n\u2019avez répondu à aucune question.';
+      }
+
       function listen() {
         var es = new EventSource(api + 'events');
-        es.addEventListener('state', function (e) { render(JSON.parse(e.data).current); });
+        es.addEventListener('state', function (e) {
+          var st = JSON.parse(e.data);
+          if (st.run && st.run !== mine.run) { mine = { run: st.run, votes: {} }; save(); }
+          if (!st.current && st.end) renderEnd(st.end); else render(st.current);
+        });
         es.onerror = function () { /* EventSource reconnects by itself */ };
       }
       listen();

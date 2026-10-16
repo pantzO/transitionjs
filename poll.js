@@ -23,6 +23,14 @@
  *   answer    the correct options are highlighted (poll.css)
  * e.g.  data-fragments="{open} {open results} {answer}"
  *
+ * End of the lecture: an element of class "poll-end" closes the session on the phones
+ * when it receives the class `open`, and reopens it if it loses it (going back):
+ *
+ *   <p class="poll-end" data-message="Merci ! À retenir : …" data-fragments="{open}">…</p>
+ *
+ * The phones show data-message (or the element's text), and each phone computes its own
+ * score from the .correct options of every poll of the deck — the server keeps no score.
+ *
  * The script never creates nodes. It only writes CSS custom properties:
  *   on the poll:    --total (voters), --voters (same, while open)
  *   on each <li>:   --votes
@@ -67,6 +75,7 @@
     const voteUrl = server + '/s/' + encodeURIComponent(session);
 
     const elements = Array.from(document.querySelectorAll('.poll[data-poll]'));
+    const ends = Array.from(document.querySelectorAll('.poll-end'));
     const byId = new Map(elements.map((el) => [el.dataset.poll, el]));
 
     // QR codes and vote URL, for the theme to display
@@ -88,6 +97,16 @@
         .catch((e) => console.warn('[TransitionJS] polls: ' + action + ' failed', e));
     }
 
+    // The correct answers of every poll of the deck, sent to the phones at the end
+    function answers() {
+      const all = {};
+      elements.forEach((el) => {
+        const ok = Array.from(el.querySelectorAll('li')).map((li, i) => li.classList.contains('correct') ? i : -1).filter((i) => i >= 0);
+        if (ok.length) all[el.dataset.poll] = ok;
+      });
+      return all;
+    }
+
     const ready = (key && wantReset) ? post('reset', {}) : Promise.resolve();
 
     // Presenter: react to the `open` class
@@ -97,11 +116,17 @@
       if (open === !!wasOpen.get(el)) return;
       wasOpen.set(el, open);
       if (!key && !opts.key) return; // display-only deck
+      if (el.classList.contains('poll-end')) {
+        const message = (el.dataset.message || el.textContent).trim();
+        ready.then(() => post('end', open ? { active: true, message, answers: answers() } : { active: false }));
+        return;
+      }
       ready.then(() => open ? post('open', describe(el)) : post('close', { poll: el.dataset.poll }));
     }
     const observer = new MutationObserver((records) => records.forEach((r) => check(r.target)));
-    elements.forEach((el) => { wasOpen.set(el, el.classList.contains('open')); observer.observe(el, { attributes: true, attributeFilter: ['class'] }); });
-    elements.forEach(check);
+    const watched = elements.concat(ends);
+    watched.forEach((el) => { wasOpen.set(el, el.classList.contains('open')); observer.observe(el, { attributes: true, attributeFilter: ['class'] }); });
+    watched.forEach(check);
 
     // Results: write the counts as CSS variables
     function apply(stateObj) {

@@ -18,6 +18,10 @@
  *   POST open              { poll, question, options: [...], multiple }   (X-Poll-Key)
  *   POST close             { poll }                                        (X-Poll-Key)
  *   POST reset             {}  forget every poll of the session             (X-Poll-Key)
+ *   POST end               { active, message, answers: { poll: [indices] } } (X-Poll-Key)
+ *                          end of the lecture: the phones show the message, and
+ *                          compute their own score from the answers (they keep
+ *                          their votes; the server never keeps a score)
  *   GET  qr.svg            QR code of the vote page for this session
  *   GET  state.json        the state, for debugging
  *   GET  /s/<session>      the vote page
@@ -34,9 +38,12 @@ if (!KEY) console.warn('POLL_KEY is not set: anyone can open and close questions
 
 const votePage = fs.readFileSync(path.join(__dirname, 'vote.html'));
 const sessions = new Map();
+// A new run id each time a session starts afresh (server start, reset):
+// the phones forget the votes they remembered from an earlier run.
+const newRun = () => Math.random().toString(36).slice(2, 10);
 
 function session(id) {
-  if (!sessions.has(id)) sessions.set(id, { current: null, polls: new Map(), clients: new Set() });
+  if (!sessions.has(id)) sessions.set(id, { current: null, polls: new Map(), clients: new Set(), end: null, run: newRun() });
   return sessions.get(id);
 }
 
@@ -48,6 +55,8 @@ function state(s) {
   return {
     current: cur ? { id: s.current, question: cur.question, options: cur.options, multiple: cur.multiple } : null,
     polls,
+    run: s.run,
+    end: s.end,
   };
 }
 
@@ -101,7 +110,7 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname === '/' ) return send(res, 200, 'Transition.js poll server. Vote pages are at /s/<session>.', 'text/plain');
 
   // API
-  m = url.pathname.match(/^\/api\/([\w.-]+)\/(events|vote|open|close|reset|qr\.svg|state\.json)$/);
+  m = url.pathname.match(/^\/api\/([\w.-]+)\/(events|vote|open|close|reset|end|qr\.svg|state\.json)$/);
   if (!m) return send(res, 404, { error: 'not found' });
   const s = session(m[1]);
   const action = m[2];
@@ -164,7 +173,24 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (action === 'reset') {
-      s.polls.clear(); s.current = null;
+      s.polls.clear(); s.current = null; s.end = null; s.run = newRun();
+      broadcast(s);
+      return send(res, 200, { ok: true });
+    }
+
+    if (action === 'end') {
+      if (body.active) {
+        const answers = {};
+        const given = body.answers && typeof body.answers === 'object' ? body.answers : {};
+        for (const id of Object.keys(given).slice(0, 50)) {
+          const list = Array.isArray(given[id]) ? given[id].map(Number).filter((i) => Number.isInteger(i) && i >= 0 && i < 12) : [];
+          if (list.length) answers[clean(id, 64)] = [...new Set(list)];
+        }
+        s.end = { message: clean(body.message, 1000), answers };
+        s.current = null;
+      } else {
+        s.end = null;
+      }
       broadcast(s);
       return send(res, 200, { ok: true });
     }

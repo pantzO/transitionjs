@@ -7,6 +7,7 @@ Un serveur minuscule (Node, un seul fichier, une dépendance pour les QR codes) 
 1. La diapo (`poll.js`) envoie la question au serveur quand son élément `.poll` reçoit la classe `open`, et la ferme quand il la perd. Ces changements de classe sont des fragments ordinaires.
 2. Les étudiants ouvrent `https://<serveur>/s/<session>` — via le QR code affiché au début du cours — et voient la question courante ; ils votent en touchant une réponse.
 3. Le serveur pousse les compteurs à tous les navigateurs connectés (*server-sent events*), et `poll.js` les écrit dans des variables CSS ; `poll.css` dessine les barres.
+4. En fin de cours, un élément `class="poll-end"` qui reçoit la classe `open` clôt la session : les téléphones affichent son message (`data-message`) et chacun calcule son score à partir des bonnes réponses du deck. Chaque téléphone garde ses propres votes ; le serveur ne tient aucun score. Revenir en arrière (l'élément perd `open`) annule la clôture.
 
 Une *session* est une chaîne quelconque (`r309-2026-09-15`), une par cours ; la diapo la déclare dans `TransitionJS.polls({ … })`. Les questions d'une session sont identifiées par leur `data-poll`.
 

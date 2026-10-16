@@ -447,6 +447,8 @@ Sur la première diapo, `<div class="poll-join" data-poll-url><img class="poll-q
 TransitionJS.polls({ server: 'https://…apps.math.cnrs.fr', session: 'r309-2026-09-15' });
 ```
 
+Pour clore la séance, un élément `<p class="poll-end" data-message="Merci ! À retenir : …" data-fragments="{open}">` : quand il reçoit `open`, les téléphones affichent le message et le score de chacun (bonnes réponses sur le nombre de questions du deck qui ont une réponse `correct`). Le score est calculé sur le téléphone ; le serveur n'en garde aucun.
+
 Ouvrez la présentation avec `?key=…` (la clé du serveur) pour être le présentateur ; la clé est aussitôt retirée de la barre d'adresse et conservée le temps de l'onglet, pour ne pas être projetée. Sans clé, la page n'affiche que les résultats. Voir `examples/poll.html`.
 
 ## 12. Tests
